@@ -5,6 +5,8 @@ import Link from "next/link";
 import {useState} from "react";
 import show_hide from "/public/img/show-hide.png";
 import axios from "axios";
+import { setCookie } from 'cookies-next';
+import {useRouter} from "next/navigation";
 
 const PersonalTab = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +14,7 @@ const PersonalTab = () => {
     const [password, setPassword] = useState('')
     const [success, setSuccess] = useState(false)
     const [errors, setErrors] = useState({})
+    const router=useRouter();
     const handleSubmit = (e) => {
 
         e.preventDefault();
@@ -47,6 +50,8 @@ const PersonalTab = () => {
                         setSuccess(true)
                         console.log(response.data);
                         setErrors({})
+                       setCookie('user', JSON.stringify(response.data));
+                        router.push('/fees')
                     })
                     .catch((error) => {
                         console.log(error);
