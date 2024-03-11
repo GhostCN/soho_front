@@ -28,10 +28,10 @@ export default function RootLayout({ children }) {
           {children}
 
           {/* Footer Two */}
-          <FooterTwo />
+         {/* <FooterTwo />
 
-          {/* Scroll To Top */}
-          <ScrollToTop />
+           Scroll To Top
+          <ScrollToTop />*/}
         </>
       </body>
     </html>

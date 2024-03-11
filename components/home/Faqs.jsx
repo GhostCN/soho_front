@@ -6,25 +6,24 @@ import Faq from "../common/Faq";
 
 const Faqs = () => {
   return (
-    <section className="faqs-section">
+    <section className="faqs-section faqs">
       <div className="overlay pt-120 pb-120">
         <div className="container wow fadeInUp">
           <div className="row d-flex justify-content-between">
             <div className="col-lg-6 col-md-10">
               <div className="section-header">
                 <div className="left">
-                  <h2 className="title">Frequently asked questions</h2>
-                  <p>We have a list of frequently asked questions about us</p>
+                  <h3 className="title" style={{color:"#007f61"}}>Questions fréquents</h3>
                 </div>
               </div>
             </div>
-            <div className="col-lg-6 col-md-2 d-flex align-items-end justify-content-md-end justify-content-start">
+       {/*     <div className="col-lg-6 col-md-2 d-flex align-items-end justify-content-md-end justify-content-start">
               <div className="right">
                 <Link href="/register" className="cmn-btn">
                   Get Started
                 </Link>
               </div>
-            </div>
+            </div>*/}
           </div>
           <div className="row wrapper">
             <div className="col-lg-6">

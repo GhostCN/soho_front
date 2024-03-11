@@ -22,10 +22,10 @@ export default function RootLayout({ children }) {
       <head>
         <meta
           name="description"
-          content="Paylio - Online Payment Platform React Nextjs Template"
+          content="Soho - un autre moyen de transfert d'argent"
         />
         <link rel="icon" href="favicon.ico" />
-        <title>Paylio - Online Payment Platform React Nextjs Template</title>
+        <title>Soho</title>
       </head>
       <body className={`${roboto.variable} ${manrope.variable}`}>
         {/* Preloader */}

@@ -4,10 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Select from "../common/Select";
 import { navData } from "./navData";
-import lang from "/public/img/lang.png";
 import logo from "/public/soho.png";
+import {useCurrentUser} from "@/app/lib";
 
 const langSelector = [
   { id: 1, name: "EN" },
@@ -17,6 +16,7 @@ const langSelector = [
 ];
 
 const NavBar = () => {
+  const {token}=useCurrentUser();
   const [windowHeight, setWindowHeight] = useState(0);
   const menus = useRef();
   const path = usePathname();
@@ -126,12 +126,8 @@ const NavBar = () => {
                     }
                   )}
                 </ul>
+                {!token &&
                 <div className="right-area header-action d-flex align-items-center">
-             {/*     <div className="lang d-flex align-items-center d-lg-none d-xxl-flex">
-                    <Image src={lang} alt="icon" />
-                     Select
-                    <Select data={langSelector} />
-                  </div>*/}
                   <Link href="/login" className="cmn-btn login">
                     Se connecter
                   </Link>
@@ -141,6 +137,7 @@ const NavBar = () => {
                     Souscrire
                   </Link>
                 </div>
+                }
               </div>
             </nav>
           </div>

@@ -1,23 +1,66 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
-import Select from "../common/Select";
-import fb from "/public/img/fb.png";
-import google from "/public/img/google.png";
-import show_hide from "/public/img/show-hide.png";
-
-const country2 = [
-  { id: 1, name: "Select Your Country" },
-  { id: 2, name: "United State" },
-  { id: 3, name: "United kingdom" },
-  { id: 4, name: "Canada" },
-];
+import axios from "axios";
+import {useCurrentUser} from "@/app/lib";
+import {getCookie, setCookie} from "cookies-next";
 
 const PersonalTab = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const user=useCurrentUser();
+  const [recto, setRecto] = useState('');
+  const [verso, setVerso] = useState('');
+  const [profil, setProfil] = useState('');
+  const handleFileChange = (event, setter) => {
+    const selectedFile = event.target.files[0];
+    setter(selectedFile);
+  };
+  const handleSubmit= (event) => {
+    event.preventDefault();
+    if (!recto) {
+      console.log('Please select a file');
+      return false;
+    }
+    if (!verso) {
+      console.log('Please select a file');
+      return false;
+    }
+    if (!profil) {
+      console.log('Please select a file');
+      return false;
+    }
+    const formData = new FormData();
+    formData.append("id", user.user.id);
+    formData.append('recto', recto);
+    formData.append('verso', verso);
+    formData.append('profil', profil);
+    console.log(formData);
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${process.env.NEXT_PUBLIC_APP_BASE_URL}/auth/upload-file`,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data : formData
+    };
 
+    axios.request(config)
+        .then((response) => {
+          setRecto('')
+          setVerso('')
+          setProfil('')
+           const user=getCookie('user')
+          if (user){
+            const updateUser={...JSON.parse(user),user:response.data.user}
+            setCookie('user',updateUser);
+          }
+
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+
+  }
   return (
     <div
       className="tab-pane fade show active"
@@ -25,88 +68,37 @@ const PersonalTab = () => {
       role="tabpanel"
       aria-labelledby="personal-tab"
     >
-      <form action="#">
+      <form onSubmit={handleSubmit}>
         <div className="row">
-          <div className="col-6">
+          <div className="col-12">
             <div className="single-input d-flex align-items-center">
-              <input type="text" placeholder="First Name" />
-            </div>
-          </div>
-          <div className="col-6">
-            <div className="single-input d-flex align-items-center">
-              <input type="text" placeholder="Last Name" />
+              <label htmlFor="recto" style={{width:"100%"}}>Recto CNI</label>
+              <input type="file" name="recto" onChange={(e)=>handleFileChange(e,setRecto)}/>
+              {recto && recto.name}
             </div>
           </div>
         </div>
         <div className="row">
           <div className="col-12">
             <div className="single-input d-flex align-items-center">
-              {/* Select */}
-              <Select data={country2} />
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12">
-            <div className="single-input d-flex align-items-center">
-              <input type="email" placeholder="Email" />
-            </div>
-          </div>
-          <div className="col-12">
-            <div className="single-input d-flex align-items-center">
-              <input
-                type={!showPassword ? "password" : "text"}
-                className="passInput"
-                placeholder="Password"
-              />
-              <Image
-                className="showPass"
-                src={show_hide}
-                alt="image"
-                onClick={() => setShowPassword(!showPassword)}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="remember-forgot d-flex justify-content-between">
-          <div className="form-group d-flex">
-            <div className="checkbox_wrapper">
-              <input className="check-box" id="check1" type="checkbox" />
-              <label></label>
-            </div>
-            <label htmlFor="check1">
-              <span className="check_span">Remember Me</span>
-            </label>
-          </div>
-          <div className="forget-pw">
-            <Link href="/forgot-password">Forgot your password?</Link>
-          </div>
-        </div>
+              <label htmlFor="verso" style={{width:"100%"}}>Verso CNI</label>
+              <input type="file" name="verso" onChange={(e)=>handleFileChange(e,setVerso)} />
 
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-12">
+            <div className="single-input d-flex align-items-center">
+              <label htmlFor="profile" style={{width:"100%"}}>Votre profil</label>
+              <input type="file" id="profile" onChange={(e)=>handleFileChange(e,setProfil)} />
+            </div>
+          </div>
+        </div>
         <div className="btn-area">
-          <button className="cmn-btn">Register Now</button>
+          <button className="cmn-btn">Valider</button>
         </div>
       </form>
-      <div className="bottom-area">
-        <div className="continue">
-          <p>Or continue with</p>
-        </div>
-        <div className="login-with d-flex align-items-center">
-          <Link href="#">
-            <Image src={google} alt="image" />
-          </Link>
-          <Link href="#">
-            <Image src={fb} alt="image" />
-          </Link>
-        </div>
-      </div>
-      <div className="privacy">
-        <p>
-          By registering you accept our{" "}
-          <Link href="/terms-conditions">Terms & Conditions</Link> and{" "}
-          <Link href="/privacy-policy">Privacy Policy</Link>
-        </p>
-      </div>
     </div>
   );
 };
