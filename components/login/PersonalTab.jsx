@@ -6,7 +6,6 @@ import show_hide from "/public/img/show-hide.png";
 import axios from "axios";
 import { setCookie } from 'cookies-next';
 import {useRouter} from "next/navigation";
-import 'react-toastify/dist/ReactToastify.css';
 import {verifyToken} from "@/app/lib/tools";
 
 
@@ -75,13 +74,13 @@ const PersonalTab = ()  => {
                         }
 
                     })
-                    .catch(({response}) => {
-                        setStatus(''+response.status)
-                        setMessage(response.data.message)
-                        console.log(response);
+                    .catch((error) => {
+                        setStatus(''+error.response.status)
+                        setMessage(error.response.data.message)
+                        console.log(error.response);
                     });
-            } catch ({response}) {
-                console.log(response.data.message)
+            } catch (error) {
+                console.log(error.response.data.message)
             }
         }
     }

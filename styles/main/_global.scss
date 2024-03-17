@@ -94,7 +94,7 @@ button {
 }
 .recap{
   background: #f8f8ff;
-  padding: 20px 30px;
+  padding: 20px;
 }
 input,
 textarea {
@@ -176,6 +176,9 @@ span {
   display: inline-flex;
   margin: 20px 0 20px;
   width: 80%;
+}
+.form-check-input:checked{
+  background-color: #007f61 ;
 }
 .nav-link{
   padding: 15px 31px;
@@ -315,10 +318,10 @@ li {
     margin-top: 50vw
   }
   .selector{
-    width: 120px !important;
+    width: 48vw !important;
   }
   .navs-tabs{
-    width: 32.2ex;
+    width: 32.1ex;
   }
 }
 
@@ -614,6 +617,8 @@ li {
     box-shadow: 0 0 0 1px rgb(68 68 68 / 11%);
     z-index: 9;
     text-align: start;
+    height: 200px;
+    overflow-y: auto;
 
     li {
       cursor: pointer;

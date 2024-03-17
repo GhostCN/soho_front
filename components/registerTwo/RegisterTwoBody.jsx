@@ -33,7 +33,7 @@ const RegisterTwoBody = () => {
               <Image src={icon} alt="image not found" />
             </div>
             <div className="col-lg-6 z-1 text-center d-flex justify-content-center pb-120">
-              <div className="form-box">
+              <div className="form-box" style={{width:"100vw"}}>
                 <h4>Souscription Soho</h4>
                 <p className="alr-acc dont-acc">
                   j&apos;ai déja un compte  ?{" "}

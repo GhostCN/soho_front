@@ -10,10 +10,25 @@ const PersonalTab = () => {
   const [recto, setRecto] = useState('');
   const [verso, setVerso] = useState('');
   const [profil, setProfil] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('');
+  const [success, setSuccess] = useState(false)
   const handleFileChange = (event, setter) => {
     const selectedFile = event.target.files[0];
     setter(selectedFile);
   };
+  const AlertMessage = () => {
+    return (
+        <div
+            className={`alert ${status.includes("20") ? 'alert-success' : 'alert-danger'} d-flex align-items-center`}
+            role="alert">
+          <svg className="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"></svg>
+          <div>
+            {message}
+          </div>
+        </div>
+    )
+  }
   const handleSubmit= (event) => {
     event.preventDefault();
     if (!recto) {
@@ -33,7 +48,6 @@ const PersonalTab = () => {
     formData.append('recto', recto);
     formData.append('verso', verso);
     formData.append('profil', profil);
-    console.log(formData);
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -49,6 +63,9 @@ const PersonalTab = () => {
           setRecto('')
           setVerso('')
           setProfil('')
+          setSuccess(true)
+          setStatus('' + response.status)
+          setMessage(response.data.message)
            const user=getCookie('user')
           if (user){
             const updateUser={...JSON.parse(user),user:response.data.user}
@@ -56,8 +73,10 @@ const PersonalTab = () => {
           }
 
         })
-        .catch((error) => {
-          console.log(error.message);
+        .catch(({response}) => {
+          setSuccess(true)
+          setStatus('' + response.status)
+          setMessage(response.data.message)
         });
 
   }
@@ -68,6 +87,7 @@ const PersonalTab = () => {
       role="tabpanel"
       aria-labelledby="personal-tab"
     >
+      {success && <AlertMessage/>}
       <form onSubmit={handleSubmit}>
         <div className="row">
           <div className="col-12">

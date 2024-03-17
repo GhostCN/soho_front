@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import BusinessTab from "./BusinessTab";
 import PersonalTab from "./PersonalTab";
 import logo from "/public/soho.png";
 
