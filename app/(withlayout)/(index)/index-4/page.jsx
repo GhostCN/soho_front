@@ -1,17 +1,14 @@
+"use client";
 import Faqs from "@/components/home/Faqs";
-import AppDownload from "@/components/homeFour/AppDownload";
 import Banner from "@/components/homeFour/Banner";
-import CallToAction from "@/components/homeFour/CallToAction";
-import Features from "@/components/homeFour/Features";
-import HowItsWork from "@/components/homeFour/HowItsWork";
-import MarketSolutions from "@/components/homeFour/MarketSolutions";
-import Testimonials from "@/components/homeFour/Testimonials";
+import {useCurrentUser} from "@/app/lib";
 
 export default function HomeFour() {
+    const currentUser=useCurrentUser();
   return (
     <>
       {/* Banner section */}
-      <Banner />
+      <Banner user={currentUser}/>
 
       {/* Features section */}
 {/*      <Features />*/}

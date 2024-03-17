@@ -92,7 +92,10 @@ button {
   border: none;
   cursor: pointer;
 }
-
+.recap{
+  background: #f8f8ff;
+  padding: 20px;
+}
 input,
 textarea {
   padding: 10px 25px;
@@ -159,6 +162,29 @@ span {
 
 .b-none {
   border: none !important;
+}
+
+.tab.active{
+  background: #007f61 !important;
+  color: white !important;
+}
+.navs-tabs{
+  background: rgb(255, 255, 255);
+  border: 1px solid #007f61;
+  box-sizing: border-box;
+  border-radius: 30px;
+  display: inline-flex;
+  margin: 20px 0 20px;
+  width: 80%;
+}
+.form-check-input:checked{
+  background-color: #007f61 ;
+}
+.nav-link{
+  padding: 15px 31px;
+  border-radius: 30px;
+  text-transform: capitalize;
+  border: none;
 }
 
 iframe {
@@ -287,6 +313,15 @@ li {
 @media (max-width: 575px) {
   .pt-120 {
     padding-top: 50px;
+  }
+  .faqs{
+    margin-top: 50vw
+  }
+  .selector{
+    width: 48vw !important;
+  }
+  .navs-tabs{
+    width: 32.1ex;
   }
 }
 
@@ -582,6 +617,8 @@ li {
     box-shadow: 0 0 0 1px rgb(68 68 68 / 11%);
     z-index: 9;
     text-align: start;
+    height: 200px;
+    overflow-y: auto;
 
     li {
       cursor: pointer;

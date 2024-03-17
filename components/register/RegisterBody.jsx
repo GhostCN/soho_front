@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import BusinessTab from "./BusinessTab";
 import PersonalTab from "./PersonalTab";
-import logo from "/public/img/logo.png";
-import register_illus from "/public/img/register-illus.png";
+import logo from "/public/soho.png";
+
 
 const RegisterBody = () => {
   return (
@@ -14,10 +13,10 @@ const RegisterBody = () => {
             <div className="row d-flex align-items-center">
               <div className="col-sm-5 col">
                 <Link
-                  className="back-home d-flex gap-2 align-items-center"
+                  className="back-home d-flex gap-2 align-items-center text-black"
                   href="/">
-                  <i className="fa fa-angle-double-left mb-1"></i> Back To
-                  Paylio
+                  <i className="fa fa-angle-double-left mb-1"></i>
+                  Retours
                 </Link>
               </div>
               <div className="col-sm-5 col">
@@ -28,52 +27,13 @@ const RegisterBody = () => {
             </div>
           </div>
           <div className="row justify-content-center align-items-center">
-            <div className="col-md-5">
-              <div className="img-area">
-                <Image src={register_illus} alt="image" />
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-7 z-1 text-center d-flex justify-content-center pb-120">
+
+            <div className="col-lg-12 col-md-12 z-1 text-center d-flex justify-content-center pb-120">
               <div className="form-box">
-                <h4>Register with Paylio</h4>
-                <p className="alr-acc dont-acc">
-                  Already have an account?{" "}
-                  <Link href="/login">Log in now.</Link>
-                </p>
-                <ul className="nav nav-tabs" id="myTab" role="tablist">
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className="nav-link active"
-                      id="personal-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#personal"
-                      type="button"
-                      role="tab"
-                      aria-controls="personal"
-                      aria-selected="true">
-                      Personal
-                    </button>
-                  </li>
-                  <li className="nav-item" role="presentation">
-                    <button
-                      className="nav-link"
-                      id="business-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#business"
-                      type="button"
-                      role="tab"
-                      aria-controls="business"
-                      aria-selected="false">
-                      Business
-                    </button>
-                  </li>
-                </ul>
+                <h4>Valider votre compte</h4>
                 <div className="tab-content" id="myTabContent">
                   {/* Personal Tab */}
                   <PersonalTab />
-
-                  {/* Business Tab */}
-                  <BusinessTab />
                 </div>
               </div>
             </div>

@@ -1,19 +1,40 @@
+"use server";
+import jwt from 'jsonwebtoken';
+import { NextResponse } from 'next/server';
+import {deleteCookie, getCookie, getCookies, setCookie} from "cookies-next";
+import {cookies} from "next/headers";
 
-// This function can be marked `async` if using `await` inside
-import {NextResponse} from "next/server";
+// Secret key used to sign the JWT tokens
+const JWT_SECRET = process.env.JWT_SECRET;
 
-export function middleware(request) {
-    const user =  request.cookies.get('user')
-    const currentUser=user && JSON.parse(user.value);
-    const url = request.nextUrl.clone();
-    if(!currentUser &&  url.pathname.includes('dashboard')){
-       url.pathname='login';
-       return NextResponse.redirect(url);
+export async function middleware(request) {
+    const userCookie = request.cookies.get('user')?.value;
+/*    if (!userCookie) {
+        // Redirect user to login if user cookie is not present
+        const url = request.nextUrl.clone(); // Clone the current URL
+        url.pathname = '/login'; // Set the pathname to '/login'
+        return NextResponse.redirect(url); // Redirect to the modified URL
+    }*/
+    if(userCookie) {
+        try {
+            const currentUser = JSON.parse(userCookie);
+            const token = currentUser.token;
+            const decodedToken = jwt.decode(token);
+            if (!decodedToken) {
+                throw new Error('Invalid token');
+            }
+
+            if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
+
+            }
+            return NextResponse.next();
+        } catch (error) {
+            request.cookies.delete('user')
+        }
     }
-    //return NextResponse.redirect(new URL('/', request.url))
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-    matcher: '/dashboard/:path*',
-}
+    matcher: ['/'],
+};

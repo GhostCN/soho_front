@@ -1,9 +1,10 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
-import LeftArea from "./LeftArea";
 import PersonalTab from "./PersonalTab";
 import logo from "/public/soho.png";
 import icon from "/public/img/index8-illu.png";
+
 const RegisterTwoBody = () => {
   return (
     <section className="log-reg register reg-2">
@@ -32,13 +33,13 @@ const RegisterTwoBody = () => {
               <Image src={icon} alt="image not found" />
             </div>
             <div className="col-lg-6 z-1 text-center d-flex justify-content-center pb-120">
-              <div className="form-box">
+              <div className="form-box" style={{width:"100vw"}}>
                 <h4>Souscription Soho</h4>
                 <p className="alr-acc dont-acc">
                   j&apos;ai déja un compte  ?{" "}
-                  <Link href="/login">Se connecter.</Link>
+                  <Link href={"/login"}>Se connecter.</Link>
                 </p>
-                <div className="tab-content mt-4" id="myTabContent">
+                <div className="tab-content" id="myTabContent">
                   {/* Personal Tab */}
                   <PersonalTab />
                 </div>

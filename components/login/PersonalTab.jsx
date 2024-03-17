@@ -1,22 +1,36 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import {useState} from "react";
 import show_hide from "/public/img/show-hide.png";
 import axios from "axios";
 import { setCookie } from 'cookies-next';
 import {useRouter} from "next/navigation";
+import {verifyToken} from "@/app/lib/tools";
 
-const PersonalTab = () => {
+
+const PersonalTab = ()  => {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
+    const [status, setStatus] = useState('')
     const [success, setSuccess] = useState(false)
     const [errors, setErrors] = useState({})
     const router=useRouter();
-    const handleSubmit = (e) => {
+    const [message, setMessage] = useState('');
 
+    const AlertMessage = () => {
+        return (
+            <div className={`alert ${status === "201" ? 'alert-success' : 'alert-danger'} d-flex align-items-center`}
+                 role="alert">
+                <svg className="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"></svg>
+                <div>
+                    {message}
+                </div>
+            </div>
+        )
+    }
+    const handleSubmit = (e) => {
         e.preventDefault();
         // Validation logic
         const errors = {};
@@ -45,19 +59,28 @@ const PersonalTab = () => {
                 };
                 axios.request(config)
                     .then((response) => {
-                        setEmail('')
-                        setPassword('')
-                        setSuccess(true)
-                        console.log(response.data);
-                        setErrors({})
-                       setCookie('user', JSON.stringify(response.data));
-                        router.push('/fees')
+                        if (verifyToken(response.data.token)){
+                            setEmail('')
+                            setPassword('')
+                            setSuccess(true)
+                            setErrors({})
+                            setCookie('user', JSON.stringify(response.data));
+                            router.push('/')
+                        }
+                        else {
+                            setSuccess(false)
+                            setStatus(''+401)
+                            setMessage('Erreur serveur')
+                        }
+
                     })
                     .catch((error) => {
-                        console.log(error);
+                        setStatus(''+error.response.status)
+                        setMessage(error.response.data.message)
+                        console.log(error.response);
                     });
-            } catch (e) {
-
+            } catch (error) {
+                console.log(error.response.data.message)
             }
         }
     }
@@ -68,6 +91,7 @@ const PersonalTab = () => {
             role="tabpanel"
             aria-labelledby="personal-tab"
         >
+            {status && <AlertMessage/>}
             <form action="#" onSubmit={handleSubmit}>
                 <div className="row">
                     <div className="col-12">
@@ -100,22 +124,6 @@ const PersonalTab = () => {
                     <button className="cmn-btn">Connexion</button>
                 </div>
             </form>
-            <div className="form-bottom">
-                {/*    <div className="continue">
-          <p> Continuer avec</p>
-        </div>
-        <div className="login-with d-flex align-items-center">
-          <Link href="#">
-            <Image src={google} alt="image" />
-          </Link>
-          <Link href="#">
-            <Image src={fb} alt="image" />
-          </Link>
-        </div>*/}
-                <div className="forget-pw">
-                    <Link href="/forgot-password-2">Mot de passe oublié?</Link>
-                </div>
-            </div>
         </div>
     );
 };

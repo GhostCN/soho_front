@@ -290,7 +290,7 @@
 
   // Header Responsive
   .header-section {
-    background-color: $primary3;
+    background-color: $primaire;
   }
   .header-section .navbar-toggler {
     display: inline-block;
@@ -871,6 +871,9 @@
 }
 
 @media (max-width: 767px) {
+  .banner-section.index-4 .overlay .right-content {
+    padding: 50px 0;
+  }
   .banner-section .right-illu img {
     display: none;
   }
