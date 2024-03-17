@@ -4,7 +4,6 @@ import "/public/vendor/font-awesome/css/all.min.css";
 import "slick-carousel/slick/slick.css";
 // main css
 import Preloader from "@/components/preloader/Preloader";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Manrope, Roboto } from "next/font/google";
 import "../styles/globals.scss";
 
@@ -32,7 +31,6 @@ export default function RootLayout({ children }) {
         {/* Preloader */}
         <Preloader />
         {children}
-        <SpeedInsights />
       </body>
     </html>
   );
