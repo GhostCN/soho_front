@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 // main css
 import NavBar from "@/components/navBar/NavBar";
+import Head from "next/head";
 
 export default function RootLayout({ children }) {
   useEffect(() => {
@@ -10,14 +11,14 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <head>
+      <Head>
           <meta
               name="description"
               content="Soho - un autre moyen de transfert d'argent"
           />
         <link rel="icon" href={"soho.png"} />
         <title>Soho - un autre moyen de transfert d&apos;argent</title>
-      </head>
+      </Head>
       <body>
         <>
           {/* NavBar */}
