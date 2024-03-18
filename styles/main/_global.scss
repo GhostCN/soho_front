@@ -168,6 +168,14 @@ span {
   background: #007f61 !important;
   color: white !important;
 }
+.navs-check{
+  padding: 12px 25px;
+  border-radius: 30px;
+  border: none;
+  width: 100%;
+  text-transform: capitalize;
+  background-color: white;
+}
 .navs-tabs{
   background: rgb(255, 255, 255);
   border: 1px solid #007f61;
@@ -322,6 +330,9 @@ li {
   }
   .navs-tabs{
     width: 32.1ex;
+  }
+  .navs-check{
+    padding: 12px 18px;
   }
 }
 

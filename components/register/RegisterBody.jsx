@@ -10,7 +10,7 @@ const RegisterBody = () => {
       <div className="overlay">
         <div className="container">
           <div className="top-head-area">
-            <div className="row d-flex align-items-center">
+            <div className="row d-flex align-items-center">{/*
               <div className="col-sm-5 col">
                 <Link
                   className="back-home d-flex gap-2 align-items-center text-black"
@@ -18,7 +18,7 @@ const RegisterBody = () => {
                   <i className="fa fa-angle-double-left mb-1"></i>
                   Retours
                 </Link>
-              </div>
+              </div>*/}
               <div className="col-sm-5 col">
                 <Link href="/">
                   <Image src={logo} alt="image" />
