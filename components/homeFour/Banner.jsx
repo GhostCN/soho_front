@@ -8,8 +8,7 @@ import {Fragment, useEffect, useState} from "react";
 import axios from "axios";
 import {verifyToken} from "@/app/lib/tools";
 import {ModalBanner} from "@/components/homeFour/ModalBanner";
-import {usePathname, useRouter} from "next/navigation";
-import {getCookie} from "cookies-next";
+import {useRouter} from "next/navigation";
 
 const operateurs = [
     {id: 1, name: "Orange Money"},
@@ -20,6 +19,7 @@ const Banner = ({user}) => {
     const [showModal, setShowModal] = useState(false);
     const [isValide, setIsvalide] = useState(false);
     const [defaultLibelle, setDefaultLibelle] = useState('');
+    const [totalAmount, setTotalAmount] = useState(0);
     const validateForm = () => {
         setIsvalide(true)
         setShowModal(false)
@@ -30,7 +30,7 @@ const Banner = ({user}) => {
     const token = user?.token;
     const [to, setTo] = useState(operateurs[0]);
     const [telDestinatire, setTelDestinatire] = useState('');
-    const [montant, setMontant] = useState('');
+    const [montant, setMontant] = useState(0);
     const [success, setSuccess] = useState(false)
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
@@ -69,11 +69,12 @@ const Banner = ({user}) => {
     const handleClick = (element, index) => {
         setSource(element)
         setIsSelected(index)
-      setDefaultLibelle(getServiceByType(sources,element.slug)[0].libelle)
+        setDefaultLibelle(getServiceByType(sources, element.slug)[0].libelle)
     }
-    const getServiceByType=(services,type)=>{
-        return services.filter((source)=>source.type.includes(type))
+    const getServiceByType = (services, type) => {
+        return services.filter((source) => source.type.includes(type))
     }
+
     const [step, setStep] = useState(1);
     const AlertMessage = () => {
         return (
@@ -127,7 +128,7 @@ const Banner = ({user}) => {
                 try {
                     let data = JSON.stringify({
                         "walletSender": from.slug,
-                        "totalAmount": from.Fees && montant * from?.Fees[0].taux/100 + parseInt(montant),
+                        "totalAmount": totalAmount,
                         "phoneNumberSender": user.user.phone_number,
                         "walletReciever": to.slug,
                         "phoneNumberReciever": telDestinatire,
@@ -136,6 +137,7 @@ const Banner = ({user}) => {
                         "userId": user.user.id,// I
                         "amount": montant
                     });
+
                     let config = {
                         method: 'post',
                         headers: {
@@ -156,12 +158,19 @@ const Banner = ({user}) => {
                             setMessage(response.data.message)
                             setErrors({})
                             response.data.data.url && router.push(response.data.data.url)
+                            !response.data.data.url &&
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 30000); // 1
                         })
                         .catch(({response}) => {
                             setSuccess(true)
                             setStatus('' + response.status)
                             setMessage(response.data.message)
                             console.log(response);
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 30000);
                         });
                 } catch (error) {
                     console.error('Error submitting form:', error);
@@ -235,11 +244,12 @@ const Banner = ({user}) => {
                                         <form className="form text-center" onSubmit={handleValidate}>
                                             {step === 1 ?
                                                 <div className="top-area d-flex flex-column gap-3">
-                                                    <div className="nav navs-tabs d-flex justify-content-between" id="myTab" role="tablist">
+                                                    <div className="nav navs-tabs d-flex justify-content-between"
+                                                         id="myTab" role="tablist">
                                                         {
                                                             sourceCash.map((element, index) =>
                                                                 <div className="nav-item" role="presentation"
-                                                                    key={index}>
+                                                                     key={index}>
                                                                     <button
                                                                         className={`navs-check text-black text-black tab ${isSelected === index ? 'active' : ''}`}
                                                                         id="business-tab"
@@ -308,7 +318,13 @@ const Banner = ({user}) => {
                                                                     style={{border: '1px solid transparent'}}
                                                                     placeholder="Montant à envoyer"
                                                                     value={montant}
-                                                                    onChange={(e) => setMontant(e.target.value)}
+                                                                    onChange={(e) => {
+                                                                        const newMontant = parseInt(e.target.value);
+                                                                        setMontant(newMontant);
+                                                                        // Calculate total amount
+                                                                        const newTotalAmount = newMontant * from?.Fees[0].taux / 100 + newMontant || 0;
+                                                                        setTotalAmount(newTotalAmount);
+                                                                    }}
                                                                 />
                                                             </div>
                                                             {errors.montant &&
@@ -316,23 +332,24 @@ const Banner = ({user}) => {
                                                         </div>
                                                     </div>
                                                     {from?.Fees &&
-                                                    <div className="row">
-                                                        <div className="col-6 text-center align-self-center" style={{color:"#4a507e"}}>
-                                                          <label>Montant + Frais</label>
-                                                        </div>
+                                                        <div className="row">
+                                                            <div className="col-6 text-center align-self-center"
+                                                                 style={{color: "#4a507e"}}>
+                                                                <label>Montant + Frais</label>
+                                                            </div>
 
-                                                        <div className="col-6">
-                                                            <div className="d-flex align-items-center">
-                                                                <input
-                                                                    type="number"
-                                                                    className="bg-transparent"
-                                                                    placeholder="Montant total"
-                                                                    disabled
-                                                                    value={montant * from?.Fees[0].taux/100 +parseInt(montant)}
-                                                                />
+                                                            <div className="col-6">
+                                                                <div className="d-flex align-items-center">
+                                                                    <input
+                                                                        type="number"
+                                                                        className="bg-transparent"
+                                                                        placeholder="Montant total"
+                                                                        disabled
+                                                                        value={totalAmount}
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
                                                     }
 
                                                     <div className="row">
@@ -429,6 +446,14 @@ const Banner = ({user}) => {
                                                     </div>
                                                     <div className="d-flex justify-content-between mb-3">
                                                 <span>
+                                                    Montant Total
+                                                </span>
+                                                        <span>
+                                                    {totalAmount}
+                                                </span>
+                                                    </div>
+                                                    <div className="d-flex justify-content-between mb-3">
+                                                <span>
                                                     Vers
                                                 </span>
                                                         <span>
@@ -443,15 +468,16 @@ const Banner = ({user}) => {
                                                     {telDestinatire}
                                                 </span>
                                                     </div>
-
-                                                    <div className="d-flex justify-content-between mb-3">
+                                                    {code &&
+                                                        <div className="d-flex justify-content-between mb-3">
                                                 <span>
                                                     Code
                                                 </span>
-                                                        <span>
+                                                            <span>
                                                     {code}
                                                 </span>
-                                                    </div>
+                                                        </div>
+                                                    }
 
                                                     <div className="form-check">
                                                         <label className="form-check-label">
@@ -483,12 +509,13 @@ const Banner = ({user}) => {
                                                         </button>
                                                     </div> :
                                                     step === 1 && !user?.user?.state.includes("KYC") ?
-                                                    <div className="btn-area">
-                                                        <button type="submit" className="cmn-btn">
-                                                            envoyer
-                                                        </button>
-                                                    </div> :
-                                                        <p className="error">Votre compte est en attente de validation</p>
+                                                        <div className="btn-area">
+                                                            <button type="submit" className="cmn-btn">
+                                                                envoyer
+                                                            </button>
+                                                        </div> :
+                                                       step==1 && <p className="error">Votre compte est en attente de
+                                                            validation</p>
                                                 }
                                             </div>
                                         </form>
