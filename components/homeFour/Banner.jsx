@@ -1,7 +1,6 @@
 "use client"
 import Image from "next/image";
 import Link from "next/link";
-import Select from "../common/Select";
 import logo from "/public/soho.png";
 import {Listbox, Transition} from "@headlessui/react";
 import {Fragment, useEffect, useState} from "react";
@@ -30,7 +29,7 @@ const Banner = ({user}) => {
     const token = user?.token;
     const [to, setTo] = useState(operateurs[0]);
     const [telDestinatire, setTelDestinatire] = useState('');
-    const [montant, setMontant] = useState(0);
+    const [montant, setMontant] = useState('');
     const [success, setSuccess] = useState(false)
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
@@ -101,6 +100,9 @@ const Banner = ({user}) => {
         setErrors(newErrors)
 
         if (Object.keys(newErrors).length === 0) {
+            if (!user.user){
+                return router.push('/login')
+            }
             if (user.user.state.includes("INIT")) {
                 return router.push('/register')
             }
@@ -188,7 +190,7 @@ const Banner = ({user}) => {
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-lg-7 col-md-10">
-                                <div className="main-content text-center">
+                                <div className="main-content text-center align-self-center">
                                     <h1>Un autre moyen d&apos;envoyer de l&apos;argent</h1>
                                     {
                                         user.token &&
@@ -199,42 +201,7 @@ const Banner = ({user}) => {
 
                                 </div>
                             </div>
-                            {!user.token ?
-                                <div className="col-lg-5 col-md-10">
-                                    <div className="right-content">
-                                        <div className="logo-item">
-                                            <Image src={logo} alt="image"/>
-                                        </div>
-                                        <form className="form text-center">
-                                            <div className="top-area">
-                                                <div className="single-input d-flex align-items-center">
-                                                    <div className="input-control">
-                                                        <label className="input-label">De</label>
-                                                    </div>
-                                                    <div className="select-area">
-                                                        {/* select */}
-                                                        <Select data={operateurs}/>
-                                                    </div>
-                                                </div>
-                                                <div className="single-input d-flex align-items-center">
-                                                    <div className="input-control">
-
-                                                        <label className="input-label">Vers</label>
-                                                    </div>
-                                                    <div className="select-area">
-                                                        {/* select */}
-                                                        <Select data={operateurs}/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Link href={"/register-2"} className="cmn-btn">
-                                                Commencez
-                                            </Link>
-                                        </form>
-                                    </div>
-                                </div> :
-
-                                <div className="col-lg-5 col-md-10">
+                            <div className="col-lg-5 col-md-10">
                                     <div className="right-content">
                                         <div className="logo-item">
                                             <Image src={logo} alt="image"/>
@@ -376,7 +343,7 @@ const Banner = ({user}) => {
                                                                                                         className={to ? "selected fw-bold" : ""}>
                                                                                                             {itm.libelle}
                                                                                                         {to}
-                                                        </span>
+                                                                                                     </span>
                                                                                                 )}
                                                                                             </Listbox.Option>
                                                                                         ))}
@@ -514,7 +481,7 @@ const Banner = ({user}) => {
                                                                 envoyer
                                                             </button>
                                                         </div> :
-                                                       step==1 && <p className="error">Votre compte est en attente de
+                                                       step===1 && <p className="error">Votre compte est en attente de
                                                             validation</p>
                                                 }
                                             </div>
@@ -522,7 +489,6 @@ const Banner = ({user}) => {
 
                                     </div>
                                 </div>
-                            }
                         </div>
                     </div>
                 </div>
