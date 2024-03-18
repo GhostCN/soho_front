@@ -29,7 +29,7 @@ const Banner = ({user}) => {
     const token = user?.token;
     const [to, setTo] = useState(operateurs[0]);
     const [telDestinatire, setTelDestinatire] = useState('');
-    const [montant, setMontant] = useState('');
+    const [montant, setMontant] = useState(0);
     const [success, setSuccess] = useState(false)
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
