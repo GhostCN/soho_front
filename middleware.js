@@ -1,31 +1,24 @@
-"use server";
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
-import {deleteCookie, getCookie, getCookies, setCookie} from "cookies-next";
-import {cookies} from "next/headers";
 
-// Secret key used to sign the JWT tokens
-const JWT_SECRET = process.env.JWT_SECRET;
 
-export async function middleware(request) {
+export  function middleware(request, response) { // Corrected parameter name from res to response
+    const url = request.nextUrl.clone();
+    if (url.pathname.includes('verified')) {
+        url.pathname = '/';
+        const res = NextResponse.next()
+        res.cookies.set({ name: "user", value: "", path: "/" });
+        return NextResponse.rewrite(url, res);
+    }
     const userCookie = request.cookies.get('user')?.value;
-/*    if (!userCookie) {
-        // Redirect user to login if user cookie is not present
-        const url = request.nextUrl.clone(); // Clone the current URL
-        url.pathname = '/login'; // Set the pathname to '/login'
-        return NextResponse.redirect(url); // Redirect to the modified URL
-    }*/
-    if(userCookie) {
+
+    if (userCookie) {
         try {
             const currentUser = JSON.parse(userCookie);
             const token = currentUser.token;
             const decodedToken = jwt.decode(token);
             if (!decodedToken) {
                 throw new Error('Invalid token');
-            }
-
-            if (decodedToken.exp && Date.now() >= decodedToken.exp * 1000) {
-
             }
             return NextResponse.next();
         } catch (error) {
@@ -36,5 +29,5 @@ export async function middleware(request) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-    matcher: ['/'],
+    matcher: ['/', '/verified'],
 };

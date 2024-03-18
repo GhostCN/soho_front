@@ -5,11 +5,12 @@ import {Fragment, useEffect, useState} from "react";
 import show_hide from "/public/img/show-hide.png";
 import axios from "axios";
 import {Listbox, Transition} from "@headlessui/react";
-
+import {useRouter} from "next/navigation";
 
 const PersonalTab = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const router=useRouter();
     const [country, setCountry] = useState([
         {id: 1, name: "Votre pays", shortName: "",indicatif:""},
         {id: 2, name: "SÉNÉGAL", shortName: "SN",indicatif:"+221"},
@@ -116,6 +117,10 @@ const PersonalTab = () => {
                         setStatus('' + response.status)
                         setMessage(response.data.message)
                         setErrors({})
+
+                        setTimeout(() => {
+                            router.push( "/");
+                        }, 60000); // 1
                     })
                     .catch(({response}) => {
                         setSuccess(true)

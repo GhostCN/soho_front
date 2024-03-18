@@ -8,7 +8,8 @@ import {Fragment, useEffect, useState} from "react";
 import axios from "axios";
 import {verifyToken} from "@/app/lib/tools";
 import {ModalBanner} from "@/components/homeFour/ModalBanner";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
+import {getCookie} from "cookies-next";
 
 const operateurs = [
     {id: 1, name: "Orange Money"},
@@ -18,6 +19,7 @@ const operateurs = [
 const Banner = ({user}) => {
     const [showModal, setShowModal] = useState(false);
     const [isValide, setIsvalide] = useState(false);
+    const [defaultLibelle, setDefaultLibelle] = useState('');
     const validateForm = () => {
         setIsvalide(true)
         setShowModal(false)
@@ -37,12 +39,12 @@ const Banner = ({user}) => {
     const [from, setFrom] = useState({});
     const [sources, setSources] = useState([]);
     const [destinataires, setDestinataires] = useState([]);
-
     useEffect(() => {
         async function getService() {
             try {
                 return await axios.get(process.env.NEXT_PUBLIC_APP_BASE_URL + '/transaction/list-services');
             } catch (error) {
+                console.log(error)
                 // Handle error
             }
         }
@@ -52,18 +54,25 @@ const Banner = ({user}) => {
             setFrom(data?.source[0])
             setDestinataires(data?.destinations)
             setTo(data?.destinations[0])
+            setDefaultLibelle(data?.source[0].libelle)
         })
         verifyToken(token)
+
+
     }, [token]);
     const sourceCash = [
-        {id: 1, value: "Mobile Money"},
-        {id: 2, value: "Carte bancaire"},
+        {id: 1, value: "Mobile Money", slug: "MOBILE-MONEY"},
+        {id: 2, value: "Carte bancaire", slug: "CARTE"},
     ]
     const [source, setSource] = useState(sourceCash[0])
     const [isSelected, setIsSelected] = useState(0)
     const handleClick = (element, index) => {
         setSource(element)
         setIsSelected(index)
+      setDefaultLibelle(getServiceByType(sources,element.slug)[0].libelle)
+    }
+    const getServiceByType=(services,type)=>{
+        return services.filter((source)=>source.type.includes(type))
     }
     const [step, setStep] = useState(1);
     const AlertMessage = () => {
@@ -78,32 +87,30 @@ const Banner = ({user}) => {
             </div>
         )
     }
-
-   const handleValidate = (e)=>{
+    const handleValidate = (e) => {
         e.preventDefault();
-       // Validation logic
-       const newErrors = {};
-       if (!telDestinatire) {
-           newErrors.telDestinatire = 'Veuillez entrer votre téléphone';
-       }
-       if (!montant) {
-           newErrors.montant = 'Veuillez entrer votre montant';
-       }
-       setErrors(newErrors)
+        // Validation logic
+        const newErrors = {};
+        if (!telDestinatire) {
+            newErrors.telDestinatire = 'Veuillez entrer votre téléphone';
+        }
+        if (!montant) {
+            newErrors.montant = 'Veuillez entrer votre montant';
+        }
+        setErrors(newErrors)
 
-       if(Object.keys(newErrors).length === 0){
+        if (Object.keys(newErrors).length === 0) {
+            if (user.user.state.includes("INIT")) {
+                return router.push('/register')
+            }
+            setStep(2)
+        } else return false
 
-           if (user.user.state.includes("INIT")) {
-               return window.location.href = '/register'
-           }
-           setStep(2)
-       }else return false
 
-
-   }
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
-         closeModal()
+        closeModal()
         // Validation logic
         const errors = {};
         if (!telDestinatire) {
@@ -120,6 +127,7 @@ const Banner = ({user}) => {
                 try {
                     let data = JSON.stringify({
                         "walletSender": from.slug,
+                        "totalAmount": from.Fees && montant * from?.Fees[0].taux/100 + parseInt(montant),
                         "phoneNumberSender": user.user.phone_number,
                         "walletReciever": to.slug,
                         "phoneNumberReciever": telDestinatire,
@@ -171,12 +179,15 @@ const Banner = ({user}) => {
                     <div className="container">
                         <div className="row justify-content-center">
                             <div className="col-lg-7 col-md-10">
-                                <div className="main-content">
+                                <div className="main-content text-center">
                                     <h1>Un autre moyen d&apos;envoyer de l&apos;argent</h1>
-                                    {/*       <p>Safe and affordable online money transfer service</p>*/}
-                                    <Link href={"/register"} className="cmn-btn">
-                                        Valider compte
-                                    </Link>
+                                    {
+                                        user.token &&
+                                        <Link href={"/register"} className="cmn-btn mt-4">
+                                            Valider compte
+                                        </Link>
+                                    }
+
                                 </div>
                             </div>
                             {!user.token ?
@@ -224,13 +235,13 @@ const Banner = ({user}) => {
                                         <form className="form text-center" onSubmit={handleValidate}>
                                             {step === 1 ?
                                                 <div className="top-area d-flex flex-column gap-3">
-                                                    <ul className="nav navs-tabs" id="myTab" role="tablist">
+                                                    <div className="nav navs-tabs d-flex justify-content-between" id="myTab" role="tablist">
                                                         {
                                                             sourceCash.map((element, index) =>
-                                                                <li className="nav-item" role="presentation"
+                                                                <div className="nav-item" role="presentation"
                                                                     key={index}>
                                                                     <button
-                                                                        className={`nav-link text-black text-black tab ${isSelected === index ? 'active' : ''}`}
+                                                                        className={`navs-check text-black text-black tab ${isSelected === index ? 'active' : ''}`}
                                                                         id="business-tab"
                                                                         data-bs-toggle="tab"
                                                                         data-bs-target="#business"
@@ -238,54 +249,55 @@ const Banner = ({user}) => {
                                                                         role="tab"
                                                                         aria-controls="business"
                                                                         onClick={() => handleClick(element, index)}
-                                                                        value={element.value}
+                                                                        value={element.slug}
                                                                         aria-selected="false">
                                                                         {element.value}
                                                                     </button>
-                                                                </li>
+                                                                </div>
                                                             )
                                                         }
-                                                    </ul>
-                                                    {source.id === 1 &&
-                                                        <div className="row">
-                                                            <div className="col-12">
-                                                                <div className="single-input d-flex align-items-center">
-                                                                    <div className="input-control">
-                                                                        <label className="input-label">De</label>
-                                                                    </div>
-                                                                    <div className="select-area">
-                                                                        <Listbox value={from.slug} onChange={setFrom}>
-                                                                            <div className="selector"
-                                                                                 style={{width: "13vw"}}>
-                                                                                <Listbox.Button>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-12">
+                                                            <div className="single-input d-flex align-items-center">
+                                                                <div className="input-control">
+                                                                    <label className="input-label">De</label>
+                                                                </div>
+                                                                <div className="select-area">
+                                                                    <Listbox value={from?.slug} onChange={setFrom}>
+                                                                        <div className="selector"
+                                                                             style={{width: "13vw"}}>
+                                                                            <Listbox.Button>
                                                                                     <span
-                                                                                        className="">{from.libelle}</span>
-                                                                                </Listbox.Button>
-                                                                                <Transition as={Fragment}>
+                                                                                        className="">{defaultLibelle}</span>
+                                                                            </Listbox.Button>
+                                                                            <Transition as={Fragment}>
+                                                                                <Listbox.Options>
                                                                                     <Listbox.Options>
-                                                                                        {
-                                                                                            sources.map((itm) => (
+                                                                                        {sources
+                                                                                            .filter(itm => itm.type.includes(source.slug))
+                                                                                            .map((itm) => (
                                                                                                 <Listbox.Option
                                                                                                     key={itm.id}
                                                                                                     value={itm}>
                                                                                                     {({from}) => (
                                                                                                         <span
                                                                                                             className={from ? "selected fw-bold" : ""}>
-                                                                                                           {itm.libelle}
+                                                                                                             {itm.libelle}
                                                                                                         </span>
                                                                                                     )}
                                                                                                 </Listbox.Option>
                                                                                             ))
                                                                                         }
                                                                                     </Listbox.Options>
-                                                                                </Transition>
-                                                                            </div>
-                                                                        </Listbox>
-                                                                    </div>
+                                                                                </Listbox.Options>
+                                                                            </Transition>
+                                                                        </div>
+                                                                    </Listbox>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    }
+                                                    </div>
                                                     <div className="row">
                                                         <div className="col-12">
                                                             <div className="single-input d-flex align-items-center"
@@ -303,6 +315,25 @@ const Banner = ({user}) => {
                                                                 <span className="error">{errors.montant}</span>}
                                                         </div>
                                                     </div>
+                                                    {from?.Fees &&
+                                                    <div className="row">
+                                                        <div className="col-6 text-center align-self-center" style={{color:"#4a507e"}}>
+                                                          <label>Montant + Frais</label>
+                                                        </div>
+
+                                                        <div className="col-6">
+                                                            <div className="d-flex align-items-center">
+                                                                <input
+                                                                    type="number"
+                                                                    className="bg-transparent"
+                                                                    placeholder="Montant total"
+                                                                    disabled
+                                                                    value={montant * from?.Fees[0].taux/100 +parseInt(montant)}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    }
 
                                                     <div className="row">
                                                         <div className="col-12">
@@ -326,7 +357,7 @@ const Banner = ({user}) => {
                                                                                                 {({to}) => (
                                                                                                     <span
                                                                                                         className={to ? "selected fw-bold" : ""}>
-                                                            {itm.libelle}
+                                                                                                            {itm.libelle}
                                                                                                         {to}
                                                         </span>
                                                                                                 )}
@@ -423,10 +454,12 @@ const Banner = ({user}) => {
                                                     </div>
 
                                                     <div className="form-check">
-                                                            <label className="form-check-label">
-                                                                Je confirme que les informations fournies sont exactes!
-                                                            </label>
-                                                        <input className="form-check-input" type="checkbox" value={isValide} onClick={()=>setIsvalide(true)}  style={{padding:"1%",borderColor:"black"}}/>
+                                                        <label className="form-check-label">
+                                                            Je confirme que les informations fournies sont exactes!
+                                                        </label>
+                                                        <input className="form-check-input" type="checkbox"
+                                                               value={isValide} onClick={() => setIsvalide(true)}
+                                                               style={{padding: "1%", borderColor: "black"}}/>
                                                     </div>
                                                 </div>
                                             }
@@ -443,18 +476,19 @@ const Banner = ({user}) => {
                                                     </Fragment>
                                                 }
 
-                                                {isValide && step===2 ?
-                                                <div className="btn-area">
-                                                    <button type="submit" className="cmn-btn" onClick={openModal}>
-                                                        envoyer
-                                                    </button>
-                                                </div>:
-                                                    step ===1 &&
+                                                {isValide && step === 2 ?
+                                                    <div className="btn-area">
+                                                        <button type="submit" className="cmn-btn" onClick={openModal}>
+                                                            envoyer
+                                                        </button>
+                                                    </div> :
+                                                    step === 1 && !user?.user?.state.includes("KYC") ?
                                                     <div className="btn-area">
                                                         <button type="submit" className="cmn-btn">
                                                             envoyer
                                                         </button>
-                                                    </div>
+                                                    </div> :
+                                                        <p className="error">Votre compte est en attente de validation</p>
                                                 }
                                             </div>
                                         </form>

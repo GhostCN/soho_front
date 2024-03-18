@@ -4,6 +4,8 @@ import { useState } from "react";
 import axios from "axios";
 import {useCurrentUser} from "@/app/lib";
 import {getCookie, setCookie} from "cookies-next";
+import {useRouter} from "next/navigation";
+
 
 const PersonalTab = () => {
   const user=useCurrentUser();
@@ -13,6 +15,7 @@ const PersonalTab = () => {
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('');
   const [success, setSuccess] = useState(false)
+  const router=useRouter();
   const handleFileChange = (event, setter) => {
     const selectedFile = event.target.files[0];
     setter(selectedFile);
@@ -71,7 +74,7 @@ const PersonalTab = () => {
             const updateUser={...JSON.parse(user),user:response.data.user}
             setCookie('user',updateUser);
           }
-
+          router.push('/')
         })
         .catch(({response}) => {
           setSuccess(true)
