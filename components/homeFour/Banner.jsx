@@ -9,6 +9,7 @@ import {verifyToken} from "@/app/lib/tools";
 import {ModalBanner} from "@/components/homeFour/ModalBanner";
 import {useRouter} from "next/navigation";
 
+
 const operateurs = [
     {id: 1, name: "Orange Money"},
     {id: 2, name: "Wave"},
@@ -17,7 +18,8 @@ const operateurs = [
 const Banner = ({user}) => {
     const [showModal, setShowModal] = useState(false);
     const [isValide, setIsvalide] = useState(false);
-    const [defaultLibelle, setDefaultLibelle] = useState('');
+    const [defaultLibelleFrom, setDefaultLibelleFrom] = useState('');
+    const [defaultLibelleTo, setDefaultLibelleTo] = useState('');
     const [totalAmount, setTotalAmount] = useState(0);
     const validateForm = () => {
         setIsvalide(true)
@@ -53,10 +55,10 @@ const Banner = ({user}) => {
             setFrom(data?.source[0])
             setDestinataires(data?.destinations)
             setTo(data?.destinations[0])
-            setDefaultLibelle(data?.source[0].libelle)
+            setDefaultLibelleFrom(data?.source[0]?.libelle)
+            setDefaultLibelleTo(data?.destinations[0]?.libelle)
         })
         verifyToken(token)
-
 
     }, [token]);
     const sourceCash = [
@@ -68,7 +70,8 @@ const Banner = ({user}) => {
     const handleClick = (element, index) => {
         setSource(element)
         setIsSelected(index)
-        setDefaultLibelle(getServiceByType(sources, element.slug)[0].libelle)
+        setDefaultLibelleFrom(getServiceByType(sources, element?.slug)[0]?.libelle)
+        setDefaultLibelleTo(getServiceByType(destinataires, element?.slug)[0]?.libelle)
     }
     const getServiceByType = (services, type) => {
         return services.filter((source) => source.type.includes(type))
@@ -100,9 +103,6 @@ const Banner = ({user}) => {
         setErrors(newErrors)
 
         if (Object.keys(newErrors).length === 0) {
-            if (!user.user){
-                return router.push('/login')
-            }
             if (user.user.state.includes("INIT")) {
                 return router.push('/register')
             }
@@ -139,7 +139,7 @@ const Banner = ({user}) => {
                         "userId": user.user.id,// I
                         "amount": montant
                     });
-
+                    console.log(data)
                     let config = {
                         method: 'post',
                         headers: {
@@ -165,11 +165,11 @@ const Banner = ({user}) => {
                                 window.location.reload();
                             }, 30000); // 1
                         })
-                        .catch(({response}) => {
+                        .catch((error) => {
                             setSuccess(true)
-                            setStatus('' + response.status)
-                            setMessage(response.data.message)
-                            console.log(response);
+                            setStatus('' + error.response.status)
+                            setMessage(error.response.data.message)
+                            console.log(error);
                             setTimeout(() => {
                                 window.location.reload();
                             }, 30000);
@@ -246,7 +246,7 @@ const Banner = ({user}) => {
                                                                              style={{width: "13vw"}}>
                                                                             <Listbox.Button>
                                                                                     <span
-                                                                                        className="">{defaultLibelle}</span>
+                                                                                        className="">{defaultLibelleFrom}</span>
                                                                             </Listbox.Button>
                                                                             <Transition as={Fragment}>
                                                                                 <Listbox.Options>
@@ -330,7 +330,7 @@ const Banner = ({user}) => {
                                                                         <div className="selector"
                                                                              style={{width: "14.2vw"}}>
                                                                             <Listbox.Button>
-                                                                                <span className="">{to?.libelle}</span>
+                                                                                <span className="">{defaultLibelleTo}</span>
                                                                             </Listbox.Button>
                                                                             <div className="options-container">
                                                                                 <Transition as={Fragment}>
