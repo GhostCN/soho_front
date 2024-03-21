@@ -234,7 +234,6 @@ const Banner = ({user}) => {
                                                                             </Listbox.Button>
                                                                             <Transition as={Fragment}>
                                                                                 <Listbox.Options>
-                                                                                    <Listbox.Options>
                                                                                         {sources
                                                                                             .filter(itm => itm.type.includes(source.slug))
                                                                                             .map((itm) => (
@@ -250,7 +249,6 @@ const Banner = ({user}) => {
                                                                                                 </Listbox.Option>
                                                                                             ))
                                                                                         }
-                                                                                    </Listbox.Options>
                                                                                 </Listbox.Options>
                                                                             </Transition>
                                                                         </div>
