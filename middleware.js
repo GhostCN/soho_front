@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export  function middleware(request, response) { // Corrected parameter name from res to response
     const url = request.nextUrl.clone();
-    if (url.pathname.includes('verified')) {
+    if (url.pathname.includes('verified') || url.pathname.includes('logout')) {
         url.pathname = '/';
         const res = NextResponse.next()
         res.cookies.set({ name: "user", value: "", path: "/" });
@@ -29,5 +29,5 @@ export  function middleware(request, response) { // Corrected parameter name fro
 
 // See "Matching Paths" below to learn more
 export const config = {
-    matcher: ['/', '/verified'],
+    matcher: ['/', '/verified','/logout'],
 };

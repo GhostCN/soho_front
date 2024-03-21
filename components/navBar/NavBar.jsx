@@ -126,18 +126,25 @@ const NavBar = () => {
                     }
                   )}
                 </ul>
-                {!token &&
+                {!token ?
                 <div className="right-area header-action d-flex align-items-center">
-                  <Link href="/login" className="cmn-btn login">
+                  <Link href={"/login"} className="cmn-btn login">
                     Se connecter
                   </Link>
                   <Link
-                    href="/register-2"
+                    href={"/register-2"}
                     className="cmn-btn d-lg-none d-xxl-block">
                     Souscrire
                   </Link>
                 </div>
+                    :
+                    <div className="right-area header-action d-flex align-items-center">
+                      <Link href={"/logout"} className="cmn-btn">
+                        Déconnexion
+                      </Link>
+                    </div>
                 }
+
               </div>
             </nav>
           </div>

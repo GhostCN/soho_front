@@ -31,7 +31,7 @@ const Banner = ({user}) => {
     const token = user?.token;
     const [to, setTo] = useState(operateurs[0]);
     const [telDestinatire, setTelDestinatire] = useState('');
-    const [montant, setMontant] = useState(0);
+    const [montant, setMontant] = useState('');
     const [success, setSuccess] = useState(false)
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
@@ -39,21 +39,20 @@ const Banner = ({user}) => {
     const [errors, setErrors] = useState({});
     const [from, setFrom] = useState({});
     const [sources, setSources] = useState([]);
-    const [destinataires, setDestinataires] = useState([]);
+    const [destinations, setDestinations] = useState([]);
     useEffect(() => {
         async function getService() {
             try {
                 return await axios.get(process.env.NEXT_PUBLIC_APP_BASE_URL + '/transaction/list-services');
             } catch (error) {
                 console.log(error)
-                // Handle error
             }
         }
 
         getService().then(({data}) => {
             setSources(data?.source)
             setFrom(data?.source[0])
-            setDestinataires(data?.destinations)
+            setDestinations(data?.destinations)
             setTo(data?.destinations[0])
             setDefaultLibelleFrom(data?.source[0]?.libelle)
             setDefaultLibelleTo(data?.destinations[0]?.libelle)
@@ -70,13 +69,12 @@ const Banner = ({user}) => {
     const handleClick = (element, index) => {
         setSource(element)
         setIsSelected(index)
-        setDefaultLibelleFrom(getServiceByType(sources, element?.slug)[0]?.libelle)
-        setDefaultLibelleTo(getServiceByType(destinataires, element?.slug)[0]?.libelle)
+       setFrom(getServiceByType(sources, element?.slug)[0])
+        setTo(getServiceByType(destinations, sourceCash[0].slug)[0])
     }
     const getServiceByType = (services, type) => {
         return services.filter((source) => source.type.includes(type))
     }
-
     const [step, setStep] = useState(1);
     const AlertMessage = () => {
         return (
@@ -99,35 +97,25 @@ const Banner = ({user}) => {
         }
         if (!montant) {
             newErrors.montant = 'Veuillez entrer votre montant';
+        }else if (montant > 5000){
+            newErrors.montant = 'Le montant doit être supérieur ou égale à 5000F';
         }
         setErrors(newErrors)
-
         if (Object.keys(newErrors).length === 0) {
-            if (user.user.state.includes("INIT")) {
+            if(!user.user){
+                return router.push('/login')
+            }
+            if (user?.user?.state.includes("INIT")) {
                 return router.push('/register')
             }
             setStep(2)
         } else return false
-
-
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
         closeModal()
-        // Validation logic
-        const errors = {};
-        if (!telDestinatire) {
-            errors.telDestinatire = 'Veuillez entrer votre téléphone';
-        }
-        if (!montant) {
-            errors.montant = 'Veuillez entrer votre montant';
-        }
-        console.log('Hello')
         if (step === 2 && isValide) {
-
-            if (Object.keys(errors).length === 0) {
-
-                try {
+            try {
                     let data = JSON.stringify({
                         "walletSender": from.slug,
                         "totalAmount": totalAmount,
@@ -162,25 +150,21 @@ const Banner = ({user}) => {
                             response.data.data.url && router.push(response.data.data.url)
                             !response.data.data.url &&
                             setTimeout(() => {
-                                window.location.reload();
+                                router.push('/index-2');
                             }, 30000); // 1
                         })
                         .catch((error) => {
                             setSuccess(true)
                             setStatus('' + error.response.status)
-                            setMessage(error.response.data.message)
-                            console.log(error);
+                            setMessage(JSON.parse(error.response.data.error).message)
                             setTimeout(() => {
                                 window.location.reload();
                             }, 30000);
                         });
                 } catch (error) {
-                    console.error('Error submitting form:', error);
-                }
-                console.log('Form submitted successfully');
-            } else {
-                setErrors(errors);
+                console.error('Error submitting form:', error);
             }
+            console.log('Form submitted successfully');
         }
     };
     return (
@@ -193,7 +177,7 @@ const Banner = ({user}) => {
                                 <div className="main-content text-center align-self-center">
                                     <h1>Un autre moyen d&apos;envoyer de l&apos;argent</h1>
                                     {
-                                        user.token &&
+                                        user.token && user.user.state.includes("INIT") &&
                                         <Link href={"/register"} className="cmn-btn mt-4">
                                             Valider compte
                                         </Link>
@@ -211,7 +195,7 @@ const Banner = ({user}) => {
                                         <form className="form text-center" onSubmit={handleValidate}>
                                             {step === 1 ?
                                                 <div className="top-area d-flex flex-column gap-3">
-                                                    <div className="nav navs-tabs d-flex justify-content-between"
+                                                    <div className="nav navs-tabs d-flex justify-content-between align-self-center"
                                                          id="myTab" role="tablist">
                                                         {
                                                             sourceCash.map((element, index) =>
@@ -234,6 +218,7 @@ const Banner = ({user}) => {
                                                             )
                                                         }
                                                     </div>
+                                                    {source.id === 1 &&
                                                     <div className="row">
                                                         <div className="col-12">
                                                             <div className="single-input d-flex align-items-center">
@@ -245,8 +230,7 @@ const Banner = ({user}) => {
                                                                         <div className="selector"
                                                                              style={{width: "13vw"}}>
                                                                             <Listbox.Button>
-                                                                                    <span
-                                                                                        className="">{defaultLibelleFrom}</span>
+                                                                                    <span className="">{from?.libelle}</span>
                                                                             </Listbox.Button>
                                                                             <Transition as={Fragment}>
                                                                                 <Listbox.Options>
@@ -275,6 +259,7 @@ const Banner = ({user}) => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    }
                                                     <div className="row">
                                                         <div className="col-12">
                                                             <div className="single-input d-flex align-items-center"
@@ -300,13 +285,13 @@ const Banner = ({user}) => {
                                                     </div>
                                                     {from?.Fees &&
                                                         <div className="row">
-                                                            <div className="col-6 text-center align-self-center"
-                                                                 style={{color: "#4a507e"}}>
-                                                                <label>Montant + Frais</label>
+                                                            <div className="col-6 align-self-center"
+                                                                 style={{color: "#4a507e",textAlign:"justify"}}>
+                                                                <label>Montant Total</label>
                                                             </div>
 
                                                             <div className="col-6">
-                                                                <div className="d-flex align-items-center">
+                                                                <div className="d-flex align-items-center" style={{borderRadius:"10px"}}>
                                                                     <input
                                                                         type="number"
                                                                         className="bg-transparent"
@@ -330,28 +315,34 @@ const Banner = ({user}) => {
                                                                         <div className="selector"
                                                                              style={{width: "14.2vw"}}>
                                                                             <Listbox.Button>
-                                                                                <span className="">{defaultLibelleTo}</span>
+                                                                                <span className="">{to?.libelle}</span>
                                                                             </Listbox.Button>
                                                                             <div className="options-container">
                                                                                 <Transition as={Fragment}>
                                                                                     <Listbox.Options>
-                                                                                        {destinataires.map((itm) => (
-                                                                                            <Listbox.Option key={itm.id}
-                                                                                                            value={itm}>
-                                                                                                {({to}) => (
-                                                                                                    <span
-                                                                                                        className={to ? "selected fw-bold" : ""}>
-                                                                                                            {itm.libelle}
-                                                                                                        {to}
-                                                                                                     </span>
-                                                                                                )}
-                                                                                            </Listbox.Option>
-                                                                                        ))}
+                                                                                        {
+                                                                                            destinations
+                                                                                            .filter(itm => itm.type.includes("MOBILE-MONEY"))
+                                                                                            .map((itm) => (
+                                                                                                <Listbox.Option
+                                                                                                    key={itm.id}
+                                                                                                    value={itm}>
+                                                                                                    {({to}) => (
+                                                                                                        <span
+                                                                                                            className={to ? "selected fw-bold" : ""}>
+                                                                                                             {itm.libelle}
+                                                                                                        </span>
+                                                                                                    )}
+                                                                                                </Listbox.Option>
+                                                                                            )
+                                                                                            )
+                                                                                        }
                                                                                     </Listbox.Options>
                                                                                 </Transition>
                                                                             </div>
                                                                         </div>
                                                                     </Listbox>
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -389,6 +380,7 @@ const Banner = ({user}) => {
                                                                         onChange={(e) => setCode(e.target.value)}
                                                                     />
                                                                 </div>
+                                                                <span className="d-flex" style={{fontSize:"12px"}}>* code otp OM = #144#391*code secret OM #</span>
                                                                 {errors.code &&
                                                                     <span className="error">{errors.code}</span>}
                                                             </div>
@@ -438,7 +430,7 @@ const Banner = ({user}) => {
                                                     {code &&
                                                         <div className="d-flex justify-content-between mb-3">
                                                 <span>
-                                                    Code
+                                                    Code otp OM
                                                 </span>
                                                             <span>
                                                     {code}
