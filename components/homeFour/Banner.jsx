@@ -28,6 +28,8 @@ const Banner = ({user}) => {
     const router = useRouter();
     const openModal = () => step === 2 && setShowModal(true);
     const closeModal = () => setShowModal(false);
+
+
     const token = user?.token;
     const [to, setTo] = useState(operateurs[0]);
     const [telDestinatire, setTelDestinatire] = useState('');
