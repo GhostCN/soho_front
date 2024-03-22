@@ -5,11 +5,12 @@ import { NextResponse } from 'next/server';
 export  function middleware(request, response) { // Corrected parameter name from res to response
     const url = request.nextUrl.clone();
     if (url.pathname.includes('verified') || url.pathname.includes('logout')) {
-        url.pathname = '/';
+        url.pathname = '/login';
         const res = NextResponse.next()
         res.cookies.set({ name: "user", value: "", path: "/" });
         return NextResponse.rewrite(url, res);
     }
+
     const userCookie = request.cookies.get('user')?.value;
 
     if (userCookie) {
