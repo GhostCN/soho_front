@@ -7,7 +7,7 @@ import {Fragment, useEffect, useState} from "react";
 import axios from "axios";
 import {verifyToken} from "@/app/lib/tools";
 import {ModalBanner} from "@/components/homeFour/ModalBanner";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 
 
 const operateurs = [
