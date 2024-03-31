@@ -5,13 +5,7 @@ const Banner = () => {
   return (
     <section className="banner-section inner-pages blog-single-2">
       {/* Banner Small */}
-      <BannerSmall title="Blog Single" cls="pb-0">
-        <Breadcrumb
-          breadcrumbs={[
-            ["Home", "/"],
-            ["Blog Single", "/"],
-          ]}
-        />
+      <BannerSmall title="Conditions générales d'utilisation" cls="pb-0">
       </BannerSmall>
     </section>
   );

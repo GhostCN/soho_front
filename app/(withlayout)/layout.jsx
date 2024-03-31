@@ -3,6 +3,7 @@ import { useEffect } from "react";
 // main css
 import NavBar from "@/components/navBar/NavBar";
 import Head from "next/head";
+import FooterTwo from "@/components/footer/FooterTwo";
 
 export default function RootLayout({ children }) {
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function RootLayout({ children }) {
           <NavBar />
 
           {children}
-
+            <FooterTwo />
           {/* Footer Two */}
          {/* <FooterTwo />
 

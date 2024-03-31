@@ -198,7 +198,7 @@
     padding: 0;
 
     .overlay {
-      background-color: #131856;
+      background-color: #fbf7ec;
       background-image: url(/img/index2-banner-overlay.png),
       url(/img/index2-banner-bg.png);
       background-repeat: no-repeat, no-repeat;
@@ -1564,7 +1564,7 @@
     }
 
     .overlay {
-      background-color: #131856;
+      background-color: #fbf7ec;
       background-image: url(/img/index3-overlay.png),
       url(/img/inner-page-banner.png);
       background-repeat: no-repeat;
@@ -2417,7 +2417,7 @@
 
         a {
           position: relative;
-          color: #4a518a;
+          color: $primaire;
           display: flex;
           align-items: center;
           transition: ease 0.4s;
@@ -2436,7 +2436,7 @@
           &:hover {
             padding-left: 30px;
             transition: ease 0.4s;
-            color: $primary2;
+            color: $primaire;
 
             &::before {
               left: 12px;

@@ -10,32 +10,7 @@ import share_icon from "/public/img/share-icon.png";
 const BlogSingleBody = () => {
   return (
     <section className="blog-single second latest-articles blog-single-2 latest">
-      <div className="overlay pb-120 pt-120">
-        <div className="container">
-          <div className="row justify-content-center text-center">
-            <div className="col-lg-12">
-              <div className="section-header">
-                <h2 className="title">
-                  What are NFTs and why are some selling for millions of
-                  dollars?
-                </h2>
-                <div className="title-bottom d-flex align-items-center justify-content-between">
-                  <div className="profile d-flex align-items-center">
-                    <Image src={author_2} alt="image" />
-                    <h5>Jonh Carter</h5>
-                  </div>
-                  <div className="sub-heading">
-                    <span className="crypto">Crypto</span>
-                    <span className="date">July 21, 2021</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="container-fluid">
-          <Image className="w-100" src={blog_bg_img} alt="image" />
-        </div>
+      <div className="overlay pb-120">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-10">
@@ -88,14 +63,6 @@ const BlogSingleBody = () => {
                   </ul>
                 </div>
                 <div className="single-content">
-                  <div className="img-block text-center">
-                    <Image src={eth_blog_sec} alt="image" />
-                    <p className="xlr">
-                      Nisi quis eleifend quam adipiscing vitae.
-                    </p>
-                  </div>
-                </div>
-                <div className="single-content">
                   <h5 className="title-area">Are NFTs a good investment?</h5>
                   <p>
                     Turpis egestas sed tempus urna et. Elementum eu facilisis
@@ -124,35 +91,6 @@ const BlogSingleBody = () => {
                     faucibus ornare suspendisse. Quis viverra nibh cras pulvinar
                     mattis nunc sed blandit libero.
                   </p>
-                </div>
-                <div className="bottom-content d-flex justify-content-between">
-                  <div className="left-area">
-                    <span>NFT</span>
-                    <span>Payment Methods</span>
-                  </div>
-                  <div className="right-area d-flex align-items-center">
-                    <div className="share-icon">
-                      <Image src={share_icon} alt="image" />
-                    </div>
-                    <div className="social">
-                      <ul className="d-flex">
-                        {/* Social links */}
-                        <Social />
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div className="comment-area">
-                  <h4>COMMENTS</h4>
-
-                  {/* Comment section */}
-                  <Comment />
-                </div>
-                <div className="leave-comment">
-                  <h4>LEAVE COMMENT</h4>
-
-                  {/* Comment Form */}
-                  <CommentForm />
                 </div>
               </div>
             </div>

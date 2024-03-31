@@ -152,7 +152,7 @@ const Banner = ({user}) => {
                             response.data.data.url && router.push(response.data.data.url)
                             !response.data.data.url &&
                             setTimeout(() => {
-                                router.push('/index-2');
+                                router.push('/transactions?prop=',user?.user?.id);
                             }, 30000); // 1
                         })
                         .catch((error) => {
